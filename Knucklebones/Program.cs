@@ -2,6 +2,7 @@ using Knucklebones.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Knucklebones.Hubs;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,7 @@ builder.Services.AddAuthorization();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -35,8 +37,10 @@ app.UseRouting();
 app.UseAuthentication();    // аутентификация
 app.UseAuthorization();     // авторизация
 
+app.MapHub<PlayerHub>("/PlayerHub");
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Home}/{id?}");
+    pattern: "{controller=Home}/{action=PlayerHub}/{id?}");
 
 app.Run();

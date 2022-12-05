@@ -1,4 +1,5 @@
 ﻿using Knucklebones.Models;
+using Knucklebones.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -7,16 +8,16 @@ namespace Knucklebones.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private ApplicationContext _context;
+        public HomeController(ApplicationContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
         [Authorize]
-        public IActionResult Home()
+        public IActionResult PlayerHub()
         {
+            ViewBag.user = Newtonsoft.Json.JsonConvert.SerializeObject(User.Identity.Name);
             return View();
         }
 

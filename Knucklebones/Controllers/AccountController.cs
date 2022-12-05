@@ -40,9 +40,9 @@ namespace Knucklebones.Controllers
                     _context.Users.Add(user);
                     await _context.SaveChangesAsync();
 
-                    await Authenticate(user); 
+                    await Authenticate(user);
 
-                    return RedirectToAction("Home", "Home");
+                    return RedirectToAction("PlayerHub", "Home");
                 }
                 else
                     ModelState.AddModelError("", "Такой пользователь уже существует");
@@ -61,7 +61,7 @@ namespace Knucklebones.Controllers
                 {
                     await Authenticate(user); // аутентификация
 
-                    return RedirectToAction("Home", "Home");
+                    return RedirectToAction("PlayerHub", "Home");
                 }
                 ModelState.AddModelError("", "Некорректные логин и(или) пароль");
             }
