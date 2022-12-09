@@ -16,3 +16,37 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.UserList {
+    border-radius: 10px;
+    width: 400px;
+    padding: 5px;
+    margin: 5px;
+    background-color: #A31621;
+    border: none;
+    color: #fff;
+}
+
+    .UserList:hover {
+        box-shadow: #A31621 0px 0px 5px;
+        border: #ffffff 1px;
+    }
+
+    .UserList:focus {
+        animation-duration: 1s;
+        animation-name: showup;
+        animation-iteration-count: infinite;
+        outline: none;
+    }
+
+@keyframes showup {
+    from {
+        box-shadow: #A31621 0px 0px 5px;
+        text-shadow: none;
+    }
+
+    to {
+        box-shadow: #A31621 0px 0px 10px;
+        text-shadow: #ffffff 0px 0px 5px;       
+    }
+}

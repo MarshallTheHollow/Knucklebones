@@ -6,29 +6,13 @@
 
 <a asp-controller="Account" asp-action="Logout">Я пошутил, я не @User.Identity.Name</a>
 
-@*<div class="container">
-    <div class="row">
-        <div class="col-2">Message</div>
-        <div class="col-4"><input type="text" id="messageInput" /></div>
-    </div>
-    <div class="row">&nbsp;</div>
-    <div class="row">
-        <div class="col-6">
-            <input type="button" id="sendButton" value="Send Message" />
-        </div>
-    </div>
-</div>*@
 
-<div class="row">
-    <div class="col-6">
-        <h3>Игроки в сети:</h3>
-        <ul id="messagesList"></ul>
-    </div>
-</div>
+<h3>Игроки в сети:</h3>
+<div id="messagesList"></div>
 
 
 
-
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script>
     "use strict";
@@ -41,10 +25,12 @@
     });
 
     connection.on("DeleteUser", function (userName) {
-        console.log("Удалю" + userName);
         document.getElementById(userName).remove();
     });
 
+    connection.on("InviteToGame", function (InviteSender) {
+        console.log(InviteSender + " пригласил вас в игру");
+    });
 
     connection.start().then(function () {
 
@@ -58,11 +44,20 @@
 
     function AddUser(name) {       
         if (user != name) {
-            var li = document.createElement("li");
-            document.getElementById("messagesList").appendChild(li);
+            var input = document.createElement("input");
+            document.getElementById("messagesList").appendChild(input);
+            input.value = `${name}`;
+            input.id = name;
+            input.type= "button";
+            input.className = "UserList";
 
-            li.textContent = `${name}`;
-            li.id = name;
+            document.getElementById(name).addEventListener("click", function (event) { 
+                console.log("Send invite to " + name);
+                connection.invoke("SendInvite", name).catch(function (err) {
+                    return console.error(err.toString());
+                });
+                event.preventDefault();
+            });
         }
     }
 

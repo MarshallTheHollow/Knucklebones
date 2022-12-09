@@ -10,6 +10,12 @@ namespace Knucklebones.Hubs
 
         static List<string> Users = new List<string>();
 
+        public async Task SendInvite(string opp)
+        {
+            string InviteSender = Context.User.Identity.Name;
+            await Clients.User(opp).SendAsync("InviteToGame", InviteSender);
+        }
+
         public async Task GetUsersList()
         {
             await Clients.All.SendAsync("Userslist", Users);
@@ -17,8 +23,10 @@ namespace Knucklebones.Hubs
 
         public async Task Connect(string userName)
         {
-            Users.Add(userName);
-
+            if (!Users.Contains(userName))
+            {
+                Users.Add(userName);
+            }           
             await GetUsersList();
         }
 
@@ -41,4 +49,5 @@ namespace Knucklebones.Hubs
         }
 
     }
+
 }
