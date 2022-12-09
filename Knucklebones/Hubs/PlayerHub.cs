@@ -16,6 +16,19 @@ namespace Knucklebones.Hubs
             await Clients.User(opp).SendAsync("InviteToGame", InviteSender);
         }
 
+        public async Task InviteAction(string InviteSender, string message)
+        {
+            string me = Context.User.Identity.Name;
+            if (message == "accept")
+            {
+                await Clients.Users(InviteSender, me).SendAsync("AcceptInvite", me, InviteSender);
+            }
+            else
+            {
+                await Clients.Users(InviteSender, me).SendAsync("DeclineInvite");
+            }          
+        }
+
         public async Task GetUsersList()
         {
             await Clients.All.SendAsync("Userslist", Users);

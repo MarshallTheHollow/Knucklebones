@@ -10,6 +10,15 @@
 <h3>Игроки в сети:</h3>
 <div id="messagesList"></div>
 
+<div id="blackscreen" style="display:none"></div>
+<div id="overlay" class="logzone" style="display:none">
+    <h3 class="text-center" style="padding-top: 25px" id="text"></h3>
+    <div id="loader" class="loader text-center" style="display: none"></div>
+    <div id="acceptbuttons" style="display:none">
+        <button id="accept">Принять</button>
+        <button id="decline">Отказать</button>
+    </div>
+</div>
 
 
 <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -19,6 +28,7 @@
 
     var connection = new signalR.HubConnectionBuilder().withUrl("/PlayerHub").build();
     var user = @Html.Raw(ViewBag.user);
+    var PlayerThatInvite;
 
     connection.on("Userslist", function (Users) {
         Users.forEach(element => AddUser(element));    
@@ -29,7 +39,20 @@
     });
 
     connection.on("InviteToGame", function (InviteSender) {
-        console.log(InviteSender + " пригласил вас в игру");
+        PlayerThatInvite = InviteSender;
+        on(InviteSender);
+    });
+
+    connection.on("DeclineInvite", function () {
+        console.log("Приглашение отменено");
+        off();       
+        PlayerThatInvite = null;
+    });
+
+    connection.on("AcceptInvite", function () {
+        console.log("Редирект в игру");
+        off();
+        PlayerThatInvite = null;
     });
 
     connection.start().then(function () {
@@ -44,21 +67,68 @@
 
     function AddUser(name) {       
         if (user != name) {
-            var input = document.createElement("input");
-            document.getElementById("messagesList").appendChild(input);
-            input.value = `${name}`;
-            input.id = name;
-            input.type= "button";
-            input.className = "UserList";
+            var repeat = document.getElementById(name);
+            if(!repeat){
+                var input = document.createElement("input");
+                document.getElementById("messagesList").appendChild(input);
+                input.value = `${name}`;
+                input.id = name;
+                input.type = "button";
+                input.className = "UserList";
 
-            document.getElementById(name).addEventListener("click", function (event) { 
-                console.log("Send invite to " + name);
-                connection.invoke("SendInvite", name).catch(function (err) {
-                    return console.error(err.toString());
+                document.getElementById(name).addEventListener("click", function (event) {
+                    console.log("Send invite to " + name);
+                    on(name);
+                    connection.invoke("SendInvite", name).catch(function (err) {
+                        return console.error(err.toString());
+                    });
+                    event.preventDefault();
                 });
-                event.preventDefault();
-            });
+            }           
         }
+    }
+
+    var accfunc = function (event) {
+        var message = "accept";
+        connection.invoke("InviteAction", PlayerThatInvite, message).catch(function (err) {
+            return console.error(err.toString());
+        });
+        event.preventDefault();
+    }
+
+    var declfunc = function (event) {
+        var message = "decline";
+        connection.invoke("InviteAction", PlayerThatInvite, message).catch(function (err) {
+            return console.error(err.toString());
+        });
+        event.preventDefault();
+    }
+
+
+    function on(Player) {
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("blackscreen").style.display = "block";
+        var text = document.getElementById("text");
+
+        if(Player != PlayerThatInvite){
+            text.textContent = "Ожидание ответа от " + Player;
+            document.getElementById("loader").style.display = "block";
+        }       
+        else{
+            text.textContent = Player + " пригласил вас сыграть с ним!";
+            document.getElementById("acceptbuttons").style.display = "block";
+            document.getElementById("accept").addEventListener("click", accfunc);
+            document.getElementById("decline").addEventListener("click", declfunc);
+        }
+    }
+
+    function off() {
+        document.getElementById("accept").removeEventListener("click", accfunc);
+        document.getElementById("decline").removeEventListener("click", declfunc);
+        document.getElementById("overlay").style.display = "none";
+        document.getElementById("acceptbuttons").style.display = "none";
+        document.getElementById("blackscreen").style.display = "none";
+        document.getElementById("loader").style.display = "none";
     }
 
 </script>

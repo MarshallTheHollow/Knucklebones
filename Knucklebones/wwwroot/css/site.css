@@ -50,3 +50,53 @@ body {
         text-shadow: #ffffff 0px 0px 5px;       
     }
 }
+
+.logzone {
+    background: #ffffff;
+    position: fixed;
+    display: block;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    height: 360px;
+    z-index: 3;
+    transition: width .2s linear;
+    text-align: center !important;
+    border-radius:10px;
+}
+
+.logzone {
+    width: 480px;
+}
+
+#blackscreen {
+    position: fixed;
+    display: block;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    background-color: #000000aa;
+    backdrop-filter: blur( 5.0px );
+}
+
+
+.loader {
+    margin-left: auto;
+    margin-right: auto;
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #A31621;
+    border-radius: 50%;
+    width: 75px;
+    height: 75px;
+    margin-top: 20px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin{
+    0%{transform: rotate(0deg);}
+    100%{transform: rotate(360deg);}
+}
