@@ -13,55 +13,7 @@
         </td>
         @*Игровое поле*@
         <td class="gametd">
-                <table class="gametable">
-                <tr>
-                    <td>
-                            <table class="gametable">
-                                <tr>
-                                    <td>Ячейка 1</td>
-                                    <td>Ячейка 2</td>
-                                    <td>Ячейка 3</td>
-                                </tr>
-                                <tr>
-                                    <td>Ячейка 1</td>
-                                    <td>Ячейка 2</td>
-                                    <td>Ячейка 3</td>
-                                </tr>
-                                <tr>
-                                    <td>Ячейка 1</td>
-                                    <td>Ячейка 2</td>
-                                    <td>Ячейка 3</td>
-                                </tr>
-                                @*Вывод счета игрока*@
-                                <tr id="usertdscore"></tr>
-                            </table>
-                    </td>
-                </tr>
-                    <tr>
-                        <td >
-                            <table class="gametable">
-                                @*Вывод счета оппонента*@
-                                <tr id="usertdscore"></tr>
-                                <tr>
-                                    <td>Ячейка 1</td>
-                                    <td>Ячейка 2</td>
-                                    <td>Ячейка 3</td>
-                                </tr>
-                                <tr>
-                                    <td>Ячейка 1</td>
-                                    <td>Ячейка 2</td>
-                                    <td>Ячейка 3</td>
-                                </tr>
-                                <tr>
-                                    <td>Ячейка 1</td>
-                                    <td>Ячейка 2</td>
-                                    <td>Ячейка 3</td>
-                                </tr>
-
-                            </table>
-                        </td>
-                    </tr>
-            </table>           
+                   
         </td>
         @*Противник*@
         <td class="opptd">
@@ -84,8 +36,12 @@
     var opponent = @Html.Raw(ViewBag.opponent);
     var gameId = @Html.Raw(ViewBag.gameid);
 
+    var oppscore = 0;
+    var userscore = 0;
+
     connection.start().then(function () {
         AddUsers();
+        CheckScore();
     });
 
     function AddUsers() {
@@ -93,6 +49,10 @@
         document.getElementById("opponentname").textContent = opponent;
     }
 
+    function CheckScore() {
+        document.getElementById("userscore").textContent = "Счет: " + userscore;
+        document.getElementById("opponentscore").textContent = "Счет: " + oppscore;
+    }
 
 
     function arraycalc(arr) {
