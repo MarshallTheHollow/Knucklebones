@@ -20,6 +20,11 @@
     </div>
 </div>
 
+<form asp-action="Game" asp-controller="Home" hidden>
+    <input type="text" id="opponentname" name="opponent" />
+    <button type="submit" id="redirectbutton">submit</button>
+</form>
+
 
 <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
@@ -49,10 +54,18 @@
         PlayerThatInvite = null;
     });
 
-    connection.on("AcceptInvite", function () {
-        console.log("Редирект в игру");
+    connection.on("AcceptInvite", function (me,is) {     
+        if(me == user){
+
+            document.getElementById("opponentname").value = is;
+        }    
+        else{
+
+            document.getElementById("opponentname").value = me;
+        }
         off();
         PlayerThatInvite = null;
+        document.getElementById("redirectbutton").click();
     });
 
     connection.start().then(function () {

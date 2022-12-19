@@ -1,0 +1,112 @@
+﻿@{
+    ViewData["Title"] = "Knucklebones";
+}
+
+
+<body>
+<table class="gametable">
+    <tr>
+        @*Игрок*@
+        <td class="usertd">
+            <h3 id="username"></h3>
+            <h5 id="userscore"></h5>
+        </td>
+        @*Игровое поле*@
+        <td class="gametd">
+                <table class="gametable">
+                <tr>
+                    <td>
+                            <table class="gametable">
+                                <tr>
+                                    <td>Ячейка 1</td>
+                                    <td>Ячейка 2</td>
+                                    <td>Ячейка 3</td>
+                                </tr>
+                                <tr>
+                                    <td>Ячейка 1</td>
+                                    <td>Ячейка 2</td>
+                                    <td>Ячейка 3</td>
+                                </tr>
+                                <tr>
+                                    <td>Ячейка 1</td>
+                                    <td>Ячейка 2</td>
+                                    <td>Ячейка 3</td>
+                                </tr>
+                                @*Вывод счета игрока*@
+                                <tr id="usertdscore"></tr>
+                            </table>
+                    </td>
+                </tr>
+                    <tr>
+                        <td >
+                            <table class="gametable">
+                                @*Вывод счета оппонента*@
+                                <tr id="usertdscore"></tr>
+                                <tr>
+                                    <td>Ячейка 1</td>
+                                    <td>Ячейка 2</td>
+                                    <td>Ячейка 3</td>
+                                </tr>
+                                <tr>
+                                    <td>Ячейка 1</td>
+                                    <td>Ячейка 2</td>
+                                    <td>Ячейка 3</td>
+                                </tr>
+                                <tr>
+                                    <td>Ячейка 1</td>
+                                    <td>Ячейка 2</td>
+                                    <td>Ячейка 3</td>
+                                </tr>
+
+                            </table>
+                        </td>
+                    </tr>
+            </table>           
+        </td>
+        @*Противник*@
+        <td class="opptd">
+            <h3 id="opponentname"></h3>
+            <h5 id="opponentscore"></h5>
+        </td>
+    </tr>
+</table>
+</body>
+
+
+
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script>
+    "use strict";
+
+    var connection = new signalR.HubConnectionBuilder().withUrl("/GameHub").build();
+    var user = @Html.Raw(ViewBag.user);
+    var opponent = @Html.Raw(ViewBag.opponent);
+    var gameId = @Html.Raw(ViewBag.gameid);
+
+    connection.start().then(function () {
+        AddUsers();
+    });
+
+    function AddUsers() {
+        document.getElementById("username").textContent = user;               
+        document.getElementById("opponentname").textContent = opponent;
+    }
+
+
+
+    function arraycalc(arr) {
+        return arr.reduce((acc, elem) => {
+            const bb = elem.reduce((acc1, elem1) => {
+                if (acc1[elem1]) {
+                    acc1[elem1] = acc1[elem1] + 1;
+                } else {
+                    acc1[elem1] = 1;
+                }
+                return acc1;
+            }, {})
+            acc.push(bb)
+            return acc;
+        }, []);
+    };
+</script>

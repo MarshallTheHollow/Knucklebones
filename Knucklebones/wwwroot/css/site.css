@@ -100,3 +100,27 @@ body {
     0%{transform: rotate(0deg);}
     100%{transform: rotate(360deg);}
 }
+
+.gametable {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.usertd {
+    padding: 20px;
+    width: 20%;
+    background-color:chocolate;
+}
+
+.gametd {
+    padding: 20px;
+    width: 60%;
+    background-color: aquamarine;
+}
+
+.opptd {
+    padding: 20px;
+    width: 20%;
+    background-color: chocolate;
+}

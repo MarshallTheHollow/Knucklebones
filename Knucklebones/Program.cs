@@ -43,6 +43,8 @@ app.UseAuthorization();     // авторизация
 
 app.MapHub<PlayerHub>("/PlayerHub");
 
+app.MapHub<GameHub>("/GameHub");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=PlayerHub}/{id?}");

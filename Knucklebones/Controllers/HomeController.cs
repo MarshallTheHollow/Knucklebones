@@ -2,6 +2,7 @@
 using Knucklebones.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace Knucklebones.Controllers
@@ -18,6 +19,23 @@ namespace Knucklebones.Controllers
         public IActionResult PlayerHub()
         {
             ViewBag.user = Newtonsoft.Json.JsonConvert.SerializeObject(User.Identity.Name);
+            return View();
+        }
+
+        [Authorize]
+        public IActionResult Game(string opponent)
+        {
+            var opp = _context.Users.FirstOrDefault(u => u.Name == opponent);
+            var user = _context.Users.FirstOrDefault(u => u.Name == User.Identity.Name);
+            List<User> participants = new List<User>() {user,opp };
+            GameStory gs = new GameStory { Users =  participants};
+
+            _context.GameStories.Add(gs);
+            _context.SaveChanges();
+
+            ViewBag.user = Newtonsoft.Json.JsonConvert.SerializeObject(User.Identity.Name);
+            ViewBag.opponent = Newtonsoft.Json.JsonConvert.SerializeObject(opponent);
+            ViewBag.gameid = Newtonsoft.Json.JsonConvert.SerializeObject(gs.Id);
             return View();
         }
 
