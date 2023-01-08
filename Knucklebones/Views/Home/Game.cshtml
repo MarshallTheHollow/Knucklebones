@@ -14,8 +14,8 @@
         <td class="usertd">
             <h4 id="isuserturn"></h4>            
             <h3 id="username"></h3>
-            <h5 id="userscore"></h5>
-            <h2 id="userpoint"></h2>
+            <h2 id="userscore"></h2>
+            <h3 id="userpoint"></h3>
         </td>
         @*Игровое поле*@
         <td class="gametd">
@@ -31,7 +31,31 @@
 
                 </div>
             </div>
+
+            <div class="scoreboard">
+                <div class="enemyinfo">
+                    <h3 id="myscore0"></h3>
+                </div>
+                <div class="enemyinfo">
+                    <h3 id="myscore1"></h3>
+                </div>
+                <div class="enemyinfo">
+                    <h3 id="myscore2"></h3>
+                </div>
+            </div>
             @*Поле противника*@
+            <div class="scoreboard">
+                <div class="enemyinfo">
+                    <h3 id="enemyscore0"></h3>
+                </div>
+                <div class="enemyinfo">
+                    <h3 id="enemyscore1"></h3>
+                </div>
+                <div class="enemyinfo">
+                    <h3 id="enemyscore2"></h3>
+                </div>
+            </div>
+
             <div class="playerboard">
                 <div class="enemyinfo" id="op0">
 
@@ -46,9 +70,9 @@
         </td>
         @*Противник*@
         <td class="opptd">
-            <h2 id="enemypoint"></h2>
+            <h3 id="enemypoint"></h3>
             <h3 id="opponentname"></h3>
-            <h5 id="opponentscore"></h5>
+            <h2 id="opponentscore"></h2>
             <h4 id="isenemyturn"></h4>
         </td>
     </tr>
@@ -70,8 +94,8 @@
 
     var mypoint = null;
 
-    var oppscore = 0;
-    var userscore = 0;
+    var userscore = [0, 0, 0];
+    var oppscore = [0, 0, 0];
 
     var myScore = [[],[],[]];
     var oppScore = [[], [], []];
@@ -149,14 +173,32 @@
             });
         }
 
-        document.getElementById("userscore").textContent = "Счет: " + userscore;
-        document.getElementById("opponentscore").textContent = "Счет: " + oppscore;
+        ScoreCalc();
+
+        var totalscore = 0;
+        var opptotalscore = 0;
+
+        userscore.forEach(function(item){
+            totalscore += Number(item);
+        });
+        oppscore.forEach(function(item){
+            opptotalscore += Number(item);
+        });
+        document.getElementById("userscore").textContent = "Счет: " + totalscore;
+        document.getElementById("opponentscore").textContent = "Счет: " + opptotalscore;
     }
 
     function addPoint(point, id){
         var count = document.getElementById(id).childElementCount;
         if(count <3){
             myScore[id][count] = point;
+
+            oppScore[id].forEach(function (item, index, object) {
+                if(item == point){
+                    object.splice(index, 1);
+                }
+            });
+
 
             connection.invoke("CheckArrays", user, myScore, opponent, oppScore).catch(function (err) {
                 return console.error(err.toString());
@@ -169,7 +211,24 @@
         }      
     }
 
-
+    function ScoreCalc(){
+        userscore = [0,0,0];
+        oppscore = [0,0,0];
+        var mycalc = arraycalc(myScore);       
+        for (var i = 0; i < 3; i++){
+            for (let [key, value] of Object.entries(mycalc[i])) {
+                userscore[i] += Number(key) * Number(value) * Number(value);
+            }
+            document.getElementById("myscore"+ i).textContent = userscore[i];
+        }
+        var oppcalc = arraycalc(oppScore);
+        for (var i = 0; i < 3; i++) {
+            for (let [key, value] of Object.entries(oppcalc[i])) {
+                oppscore[i] += Number(key) * Number(value) * Number(value);
+            }
+            document.getElementById("enemyscore" + i).textContent = oppscore[i];
+        }
+    }
 
     function arraycalc(arr) {
         return arr.reduce((acc, elem) => {
