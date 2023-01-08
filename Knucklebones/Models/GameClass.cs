@@ -2,30 +2,40 @@
 {
     public class GameClass
     {
-        public int[] CheckScore(int[,] pillars)
+        public static int[][] CheckScore(int[][] arr1, int[][] arr2)
         {
-            int [] score = new int[3];
-
-            int scoreValue = 0;
-            for(int i = 0; i< 3; i++)
+            int[][] newarr2= new int[3][];
+            int i = 0;
+            do
             {
-
-
-                //for (int j = 0; j < 3; j++)
-                //{
-                //    scoreValue += pillars[i,j];
-                //}
-                score[i] = scoreValue;
+                foreach (int x in arr1[i])
+                {
+                    foreach(int y in arr2[i])
+                    {
+                        if(x != y)
+                        {
+                            newarr2[i][newarr2[i].Length] = y;
+                        }
+                    }
+                }
+                i++;
             }
-            return score;
+            while (i < 3);
+            return newarr2;   
         }
 
 
 
-        public int RollTheDice()
+        public static int RollTheDice()
         {
             var dice = new Random();
             return dice.Next(1, 6);
+        }
+
+        public static int PickFirstTurn()
+        {
+            var rand = new Random();
+            return rand.Next(0, 1);
         }
     }   
 }

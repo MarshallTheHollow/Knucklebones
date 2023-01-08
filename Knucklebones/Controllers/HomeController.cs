@@ -23,7 +23,7 @@ namespace Knucklebones.Controllers
         }
 
         [Authorize]
-        public IActionResult Game(string opponent)
+        public IActionResult Game(string opponent, string isgofirst)
         {
             var opp = _context.Users.FirstOrDefault(u => u.Name == opponent);
             var user = _context.Users.FirstOrDefault(u => u.Name == User.Identity.Name);
@@ -33,6 +33,7 @@ namespace Knucklebones.Controllers
             _context.GameStories.Add(gs);
             _context.SaveChanges();
 
+            ViewBag.isgofirst = Newtonsoft.Json.JsonConvert.SerializeObject(isgofirst);
             ViewBag.user = Newtonsoft.Json.JsonConvert.SerializeObject(User.Identity.Name);
             ViewBag.opponent = Newtonsoft.Json.JsonConvert.SerializeObject(opponent);
             ViewBag.gameid = Newtonsoft.Json.JsonConvert.SerializeObject(gs.Id);

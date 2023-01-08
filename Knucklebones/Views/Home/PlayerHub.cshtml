@@ -22,6 +22,7 @@
 
 <form asp-action="Game" asp-controller="Home" hidden>
     <input type="text" id="opponentname" name="opponent" />
+    <input type="text" id="gofirst" name="isgofirst" />
     <button type="submit" id="redirectbutton">submit</button>
 </form>
 
@@ -58,11 +59,13 @@
         if(me == user){
 
             document.getElementById("opponentname").value = is;
+            document.getElementById("gofirst").value = "youfirst";
         }    
         else{
-
-            document.getElementById("opponentname").value = me;
+            document.getElementById("opponentname").value = me;            
+            document.getElementById("gofirst").value = "yousecond";
         }
+        
         off();
         PlayerThatInvite = null;
         document.getElementById("redirectbutton").click();

@@ -2,23 +2,54 @@
     ViewData["Title"] = "Knucklebones";
 }
 
-
 <body>
+<div id="Waitingoverlay"></div>
+<div id="waitingroom" style="display:none" class="w8room">
+    <h3>Комната ожидания</h3>
+    <h5>Ходит противник</h5>
+</div>
 <table class="gametable">
     <tr>
         @*Игрок*@
         <td class="usertd">
+            <h2 id="userpoint"></h2>
             <h3 id="username"></h3>
             <h5 id="userscore"></h5>
+            <h4 id="isuserturn"></h4>
         </td>
         @*Игровое поле*@
         <td class="gametd">
-                   
+            @*Поле игрока*@
+            <div class="playerboard">
+                <div class="playerinfo" onclick="addPoint(mypoint,this.id)" id="0">
+
+                </div>
+                <div class="playerinfo" onclick="addPoint(mypoint,this.id)" id="1">
+
+                </div>
+                <div class="playerinfo" onclick="addPoint(mypoint,this.id)" id="2">
+
+                </div>
+            </div>
+            @*Поле противника*@
+            <div class="playerboard">
+                <div class="enemyinfo" id="op0">
+
+                </div>
+                <div class="enemyinfo" id="op1">
+
+                </div>
+                <div class="enemyinfo" id="op2">
+
+                </div>
+            </div>
         </td>
         @*Противник*@
         <td class="opptd">
+            <h2 id="enemypoint"></h2>
             <h3 id="opponentname"></h3>
             <h5 id="opponentscore"></h5>
+            <h4 id="isenemyturn"></h4>
         </td>
     </tr>
 </table>
@@ -35,13 +66,52 @@
     var user = @Html.Raw(ViewBag.user);
     var opponent = @Html.Raw(ViewBag.opponent);
     var gameId = @Html.Raw(ViewBag.gameid);
+    var isgofirst = @Html.Raw(ViewBag.isgofirst);
+
+    var mypoint = null;
 
     var oppscore = 0;
     var userscore = 0;
 
+    var myScore = [[],[],[]];
+    var oppScore = [[], [], []];
+
+
+    connection.on("YourTurn", function (point) {
+        OvOff();
+        document.getElementById("userpoint").textContent = "Выпал кубик: " + point;
+
+        document.getElementById("isenemyturn").textContent = "";
+        document.getElementById("isuserturn").textContent = "Ваш ход";
+
+        mypoint = point;
+    });
+
+    connection.on("ArrayUpdate", function (ms,os) {
+        myScore = ms;
+        oppScore = os;
+        CheckScore();
+    });
+
+
+    connection.on("Wait", function (point) {
+        OvOn();
+        document.getElementById("enemypoint").textContent = "Выпал кубик: " + point;
+
+        document.getElementById("isuserturn").textContent = "";
+        document.getElementById("isenemyturn").textContent = "Ход противника";
+
+        mypoint = null;
+    });
+
     connection.start().then(function () {
         AddUsers();
         CheckScore();
+        if (isgofirst == "youfirst"){
+            connection.invoke("StartTurn", user, opponent).catch(function (err) {
+                return console.error(err.toString());
+            });
+        }       
     });
 
     function AddUsers() {
@@ -50,9 +120,55 @@
     }
 
     function CheckScore() {
+        for (var i = 0; i < 3; i++) {
+            var Parent = document.getElementById(i);
+            while (Parent.firstChild) {
+                Parent.removeChild(Parent.lastChild);
+            }
+            myScore[i].forEach(function (item) {
+                var count = Parent.childElementCount;
+                var input = document.createElement("p");
+                Parent.appendChild(input);
+                input.textContent = item;
+                input.id = "slot" + count;
+            });
+        }
+        
+        for (var x = 0; x < 3; x++) {
+            var oppParent = document.getElementById("op"+x);
+            oppParent.removeChild;
+            while (oppParent.firstChild) {
+                oppParent.removeChild(oppParent.lastChild);
+            }
+            oppScore[x].forEach(function (item) {
+                var count = oppParent.childElementCount;
+                var input = document.createElement("p");
+                oppParent.appendChild(input);
+                input.textContent = item;
+                input.id = "slot" + count;
+            });
+        }
+
         document.getElementById("userscore").textContent = "Счет: " + userscore;
         document.getElementById("opponentscore").textContent = "Счет: " + oppscore;
     }
+
+    function addPoint(point, id){
+        var count = document.getElementById(id).childElementCount;
+        if(count <3){
+            myScore[id][count] = point;
+
+            connection.invoke("CheckArrays", user, myScore, opponent, oppScore).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            connection.invoke("StartTurn", opponent, user).catch(function (err) {
+                return console.error(err.toString());
+            });
+            
+        }      
+    }
+
 
 
     function arraycalc(arr) {
@@ -69,4 +185,15 @@
             return acc;
         }, []);
     };
+
+    function OvOn() {
+        document.getElementById("Waitingoverlay").style.display = "block";
+        document.getElementById("waitingroom").style.display = "block";
+    }
+
+    function OvOff() {
+        document.getElementById("Waitingoverlay").style.display = "none";
+        document.getElementById("waitingroom").style.display = "none";
+    }
+
 </script>
