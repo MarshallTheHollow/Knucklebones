@@ -5,7 +5,7 @@
         public static int RollTheDice()
         {
             var dice = new Random();
-            return dice.Next(1, 6);
+            return dice.Next(1, 7);
         }
 
     }   
