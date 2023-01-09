@@ -193,12 +193,8 @@
         if(count <3){
             myScore[id][count] = point;
 
-            oppScore[id].forEach(function (item, index, object) {
-                if(item == point){
-                    object.splice(index, 1);
-                }
-            });
-
+            var result = oppScore[id].filter(x => x != point);
+            oppScore[id] = result;
 
             connection.invoke("CheckArrays", user, myScore, opponent, oppScore).catch(function (err) {
                 return console.error(err.toString());
